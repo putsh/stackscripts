@@ -1,0 +1,116 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          unicorn
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      S 0 1 6
+# Short-Description: thin initscript
+# Description:       unicorn
+### END INIT INFO
+#
+# init.d script for single or multiple unicorn installations. Expects at least one .conf
+# file in /etc/unicorn
+#
+# Modified by archan937@gmail.com http://github.com/archan937
+# based on https://gist.github.com/jaygooby/504875 by http://github.com/jaygooby
+#
+# A sample configuration file (e.g. /etc/unicorn/my_rack_based_app.conf)
+#
+#     ROOT=/var/www/my_rack_based_app
+#     CONFIG=/var/www/my_rack_based_app/unicorn.rb
+#     ENVIRONMENT=production
+#
+# This configures a unicorn master for your app at /var/www/my_rack_based_app running in
+# production mode. It will read config/unicorn.rb for further set up.
+#
+# You should ensure different ports or sockets are set in each config/unicorn.rb if
+# you are running more than one master concurrently.
+#
+# If you call this script without any config parameters, it will attempt to run the
+# init command for all your unicorn configurations listed in /etc/unicorn/*.conf
+#
+# /etc/init.d/unicorn start # starts all unicorns
+#
+# If you specify a particular config, it will only operate on that one
+#
+# /etc/init.d/unicorn start /etc/unicorn/my_rack_based_app.conf
+
+set -e
+
+sig () {
+  test -s "$PID" && kill -$1 `cat "$PID"`
+}
+
+oldsig () {
+  test -s "$OLD_PID" && kill -$1 `cat "$OLD_PID"`
+}
+
+cmd () {
+
+  case $1 in
+    start)
+      echo "Starting $ROOT"
+      sig 0 && echo >&2 "Already running" && exit 0
+      $CMD
+      ;;
+    stop)
+      sig QUIT && echo "Stopping $ROOT" && exit 0
+      echo >&2 "Not running"
+      ;;
+    force-stop)
+      sig TERM && echo "Forcing a stop $ROOT" && exit 0
+      echo >&2 "Not running"
+      ;;
+    restart|reload)
+      sig USR2 && sleep 5 && oldsig QUIT && echo "Killing old master $ROOT" `cat $OLD_PID` && exit 0
+      echo >&2 "Couldn't reload $ROOT, starting '$CMD' instead"
+      $CMD
+      ;;
+    upgrade)
+      sig USR2 && echo Upgraded && exit 0
+      echo >&2 "Couldn't upgrade $ROOT, starting '$CMD' instead"
+      $CMD
+      ;;
+    rotate)
+      sig USR1 && echo rotated logs OK && exit 0
+      echo >&2 "Couldn't rotate logs" && exit 1
+      ;;
+    *)
+      echo >&2 "Usage: $0 <start|stop|restart|upgrade|rotate|force-stop>"
+      exit 1
+      ;;
+    esac
+}
+
+setup () {
+
+  cd $ROOT || exit 1
+  export PID=$ROOT/tmp/pids/unicorn.pid
+  export OLD_PID="$PID.oldbin"
+
+  CMD="/usr/local/rvm/gems/`rvm current`/bin/unicorn -c $CONFIG -E $ENVIRONMENT -D"
+}
+
+start_stop () {
+
+  # Either run the start/stop/reload/etc command for every config under /etc/unicorn or just do it for a specific one
+  # $1 contains the start/stop/etc command
+  # $2 if it exists, should be the specific config we want to act on
+
+  if [ $2 ]; then
+    . $2
+    setup
+    cmd $1
+  else
+    for CONFIG in /etc/unicorn/*.conf; do
+      . $CONFIG
+      setup
+      cmd $1
+    done
+  fi
+}
+
+ARGS="$1 $2"
+start_stop $ARGS

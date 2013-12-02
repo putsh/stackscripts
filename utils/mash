@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Mash is a command line tool for basic templating: mix and mash templates with variables
+#
+# Create a Mash template
+#
+# Template variables are specified with an uppercase variable name surrounded with '%' (e.g. '%HOST%')
+#
+# Example (e.g. my_template.txt)
+#
+#     Host: %HOST%
+#     Port: %PORT%
+#     Name: %NAME%
+#
+# Command line usage
+#
+# Call `mash` and pass the path to the template followed by named variables.
+# Variables start with the variable name followed by a ':' (e.g. 'port:9292')
+# Please note that you can quote your variable value.
+#
+# Example
+#
+#     $ mash my_template.txt host:archan937.com port:9292 name:"Paul Engel"
+#     Host: archan937.com
+#     Port: 9292
+#     Name: Paul Engel
+#
+#     $ mash my_template.txt host:archan937.com port:9292 name:"Paul Engel" > output.txt
+#     $ cat output.txt
+#     Host: archan937.com
+#     Port: 9292
+#     Name: Paul Engel
+#
+
+cmd='sed'
+
+for n in $(seq 2 $#)
+do
+  IFS=':' read -a array <<< "${!n}"
+  find=$(echo ${array[0]} | tr '[:lower:]' '[:upper:]')
+  unset array[0]
+  replace=$(IFS=:; echo "${array[*]}")
+
+  cmd+=' -e "s;%'
+  cmd+=$find
+  cmd+='%;'
+  cmd+=$replace
+  cmd+=';"'
+done
+
+eval "$cmd $1"
