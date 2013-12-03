@@ -11,7 +11,7 @@ This Linode stackscript installs:
 - Ruby (at default "2.0.0") - [http://www.ruby-lang.org/en](http://www.ruby-lang.org/en)
 - Unicorn - [https://github.com/defunkt/unicorn](https://github.com/defunkt/unicorn)
 - MySQL - [http://www.mysql.com](http://www.mysql.com)
-- `/etc/init.d/unicorn` - [linode/nginx-rvm-unicorn-mysql/unicorn](https://github.com/archan937/stackscripts/blob/master/linode/nginx-rvm-unicorn-mysql/unicorn)
+- `/etc/init.d/unicorn` - [templates/unicorn.init.d](https://github.com/archan937/stackscripts/blob/master/templates/unicorn.init.d)
 - `mash` - [utils/mash](https://github.com/archan937/stackscripts/blob/master/utils/mash) for basic command line templating
 
 Optionally, you can create a user and generate a simple "Hello world!" Rack application.

@@ -32,20 +32,22 @@
 #     Name: Paul Engel
 #
 
-cmd='sed'
+if [ "$1" != "" ]; then
+  cmd='sed'
 
-for n in $(seq 2 $#)
-do
-  IFS=':' read -a array <<< "${!n}"
-  find=$(echo ${array[0]} | tr '[:lower:]' '[:upper:]')
-  unset array[0]
-  replace=$(IFS=:; echo "${array[*]}")
+  for n in $(seq 2 $#)
+  do
+    IFS=':' read -a array <<< "${!n}"
+    find=$(echo ${array[0]} | tr '[:lower:]' '[:upper:]')
+    unset array[0]
+    replace=$(IFS=:; echo "${array[*]}")
 
-  cmd+=' -e "s;%'
-  cmd+=$find
-  cmd+='%;'
-  cmd+=$replace
-  cmd+=';"'
-done
+    cmd+=' -e "s;%'
+    cmd+=$find
+    cmd+='%;'
+    cmd+=$replace
+    cmd+=';"'
+  done
 
-eval "$cmd $1"
+  eval "$cmd $1"
+fi
