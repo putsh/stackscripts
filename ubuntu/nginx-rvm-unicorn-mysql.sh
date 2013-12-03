@@ -97,6 +97,4 @@ if [ "$APPLICATION" != "" ]; then
     /etc/init.d/nginx reload && /etc/init.d/unicorn start
 fi
 
-# Reboot server
-echo "Installation completed. Rebooting the server."
-reboot
+echo "Installation completed. Please reboot the server."
