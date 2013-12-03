@@ -52,7 +52,7 @@ rvmsudo gem update --system
 rvmsudo gem install unicorn --no-rdoc --no-ri
 
 # Install /etc/init.d/unicorn
-wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.init.d -P /etc/init.d/unicorn
+wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.init.d -O /etc/init.d/unicorn
 chmod 755 /etc/init.d/unicorn
 /usr/sbin/update-rc.d -f unicorn defaults
 mkdir /etc/unicorn
