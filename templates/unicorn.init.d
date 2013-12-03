@@ -1,13 +1,13 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Short-Description: Unicorn init.d
-# Description:       init.d script for single or multiple Unicorn installations
-# Provides:          Unicorn
-# Required-Start:    $local_fs $remote_fs
-# Required-Stop:     $local_fs $remote_fs
+# Provides:          unicorn
+# Required-Start:    $all
+# Required-Stop:     $network $local_fs $syslog
 # Default-Start:     2 3 4 5
-# Default-Stop:      S 0 1 6
+# Default-Stop:      0 1 6
+# Short-Description: starts unicorn applications
+# Description:       init.d script for single or multiple unicorn installations
 ### END INIT INFO
 #
 # Modified by archan937@gmail.com http://github.com/archan937
@@ -44,7 +44,7 @@ run () {
   cd $ROOT || exit 1
 
   export PID=$ROOT/tmp/pids/unicorn.pid
-  CMD="/usr/local/rvm/gems/`rvm current`/bin/unicorn -c $CONFIG -E $ENVIRONMENT -D"
+  CMD="/usr/local/rvm/bin/boot_unicorn -c $CONFIG -E $ENVIRONMENT -D"
 
   case ${1:-start} in
     start)
@@ -54,28 +54,30 @@ run () {
       ;;
     stop)
       echo "Stopping $ROOT"
-      sig QUIT && echo >&2 "Not running" && exit 0
+      sig QUIT && exit 0
+      echo >&2 "Not running"
       ;;
     restart|reload)
       echo "Reloading $ROOT"
-      sig HUP && echo reloaded OK && exit 0
+      sig HUP && exit 0
       echo >&2 "Couldn't reload, starting '$CMD' instead"
       $CMD
       ;;
     upgrade)
       echo "Upgrading $ROOT"
-      sig USR2 && echo Upgraded && exit 0
+      sig USR2 && exit 0
       echo >&2 "Couldn't upgrade, starting '$CMD' instead"
       $CMD
       ;;
     rotate)
       echo "Rotating logs $ROOT"
-      sig USR1 && echo rotated logs OK && exit 0
+      sig USR1 && exit 0
       echo >&2 "Couldn't rotate logs" && exit 1
       ;;
     force-stop)
       echo "Forcing stop $ROOT"
-      sig TERM && echo >&2 "Not running" && exit 0
+      sig TERM && exit 0
+      echo >&2 "Not running"
       ;;
     *)
       echo >&2 "Usage: $0 <start|stop|restart|upgrade|rotate|force-stop> <name of conf (optional)>"
@@ -84,12 +86,14 @@ run () {
   esac
 }
 
+ARGS="$1 $2"
+
 if [ $2 ]; then
   . /etc/unicorn/$2.conf
-  run
+  run $ARGS
 else
   for CONFIG in /etc/unicorn/*.conf; do
     . $CONFIG
-    run
+    run $ARGS
   done
 fi
