@@ -35,21 +35,21 @@ aptitude install nginx
 
 # Install RVM
 \curl -L https://get.rvm.io | sudo bash -s stable
-source /etc/profile.d/rvm.sh
+source "/usr/local/rvm/scripts/rvm"
 
 # Add global gems
 echo "rake" >> /usr/local/rvm/gemsets/global.gems
 echo "bundler" >> /usr/local/rvm/gemsets/global.gems
 
 # Install Ruby
-rvmsudo rvm install $RUBY
-rvmsudo rvm use $RUBY --default
+rvm install $RUBY
+rvm use $RUBY --default
 
 # Update Rubygems
-rvmsudo gem update --system
+gem update --system
 
 # Install Unicorn
-rvmsudo gem install unicorn --no-rdoc --no-ri
+gem install unicorn --no-rdoc --no-ri
 
 # Install /etc/init.d/unicorn
 wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.init.d -O /etc/init.d/unicorn
