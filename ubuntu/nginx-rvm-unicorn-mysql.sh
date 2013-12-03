@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir /install
-exec &> /install/stackscript.log
+mkdir $HOME/install
+exec &> $HOME/install/install.log
 
 # Set hostname
 echo "$HOSTNAME" > /etc/hostname
@@ -19,7 +19,11 @@ update-locale LANG=en_US.UTF-8
 
 # Install common packages
 yes | aptitude install build-essential bison openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libxml2-dev libxslt-dev autoconf libexpat1 ssl-cert libcurl4-openssl-dev libaprutil1-dev libapr1-dev apache2 apache2.2-common apache2-mpm-prefork apache2-utils apache2-prefork-dev
-goodstuff
+
+# Install vim, wget, less, enable color root prompt and the "ll" list long alias
+aptitude -y install wget vim less
+sed -i -e 's/^#PS1=/PS1=/' /root/.bashrc
+sed -i -e "s/^#alias ll='ls -l'/alias ll='ls -al'/" /root/.bashrc
 
 # Install find utils
 aptitude install findutils locate
@@ -81,15 +85,15 @@ if [ "$APPLICATION" != "" ]; then
     mkdir /var/www/$APPLICATION/tmp/sockets
     mkdir /var/www/$APPLICATION/tmp/pids
 
-    wget https://raw.github.com/archan937/stackscripts/master/templates/rack.config.ru -P /root/install/
-    wget https://raw.github.com/archan937/stackscripts/master/templates/nginx.conf     -P /root/install/
-    wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.conf   -P /root/install/
-    wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.rb     -P /root/install/
+    wget https://raw.github.com/archan937/stackscripts/master/templates/nginx.conf     -P $HOME/install/
+    wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.conf   -P $HOME/install/
+    wget https://raw.github.com/archan937/stackscripts/master/templates/unicorn.rb     -P $HOME/install/
+    wget https://raw.github.com/archan937/stackscripts/master/templates/rack.config.ru -P $HOME/install/
 
-    mash /root/install/rack.config.ru application:$APPLICATION > /var/www/$APPLICATION/config.ru
-    mash /root/install/unicorn.rb     application:$APPLICATION > /var/www/$APPLICATION/unicorn.rb
-    mash /root/install/unicorn.conf   application:$APPLICATION > /etc/unicorn/$APPLICATION.conf
-    mash /root/install/nginx.conf     application:$APPLICATION > /etc/nginx/sites-available/$APPLICATION
+    mash $HOME/install/nginx.conf     application:$APPLICATION > /etc/nginx/sites-available/$APPLICATION
+    mash $HOME/install/unicorn.conf   application:$APPLICATION > /etc/unicorn/$APPLICATION.conf
+    mash $HOME/install/unicorn.rb     application:$APPLICATION > /var/www/$APPLICATION/unicorn.rb
+    mash $HOME/install/rack.config.ru application:$APPLICATION > /var/www/$APPLICATION/config.ru
 
     ln -nfs /etc/nginx/sites-available/$APPLICATION /etc/nginx/sites-enabled/$APPLICATION
     rm /etc/nginx/sites-enabled/default
