@@ -46,7 +46,7 @@ run () {
   export PID=$ROOT/tmp/pids/unicorn.pid
   CMD="/usr/local/rvm/gems/`rvm current`/bin/unicorn -c $CONFIG -E $ENVIRONMENT -D"
 
-  case $1 in
+  case ${1:-start} in
     start)
       echo "Starting $ROOT"
       sig 0 && echo >&2 "Already running" && exit 0
