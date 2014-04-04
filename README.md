@@ -2,19 +2,18 @@
 
 My two cents worth of stackscripts
 
-## linode/nginx-rvm-unicorn-mysql [[link]](https://www.linode.com/stackscripts/view/?StackScriptID=7163)
+## Usage
 
-This Linode stackscript installs:
+Make sure to have SSH forwarding enabled:
 
-- Nginx - [https://github.com/nginx/nginx](https://github.com/nginx/nginx)
-- RVM - [https://rvm.io](https://rvm.io)
-- Ruby (at default "2.0.0") - [http://www.ruby-lang.org/en](http://www.ruby-lang.org/en)
-- Unicorn - [https://github.com/defunkt/unicorn](https://github.com/defunkt/unicorn)
-- MySQL - [http://www.mysql.com](http://www.mysql.com)
-- `/etc/init.d/unicorn` - [templates/unicorn.init.d](https://github.com/archan937/stackscripts/blob/master/templates/unicorn.init.d)
-- `mash` - [utils/mash](https://github.com/archan937/stackscripts/blob/master/utils/mash) for basic command line templating
+(in ~/.ssh/config)
 
-Optionally, you can create a user and generate a simple "Hello world!" Rack application.
+    Host *
+      ForwardAgent yes
+
+Log in on your server using SSH as root and run the following command:
+
+    $ curl -L https://raw.github.com/archan937/stackscripts/master/ubuntu/setup.sh | bash
 
 ## License
 

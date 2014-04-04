@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ "$3" != "" ]; then
+
+app_name=$1
+app_env=$2
+server_name=$3
+app_dir=$HOME/$app_name
+app_root=$app_dir/current
+
+utils=$(dirname $0)
+templates=$(readlink -m $0/../../templates)
+
+# Similar to cap deploy:setup
+mkdir -p $app_dir
+mkdir -p $app_dir/releases
+mkdir -p $app_dir/shared
+mkdir -p $app_dir/shared/system
+mkdir -p $app_dir/shared/log
+mkdir -p $app_dir/shared/pids
+mkdir -p $app_dir/shared/sockets
+chmod g+w $app_dir
+chmod g+w $app_dir/releases
+chmod g+w $app_dir/shared
+chmod g+w $app_dir/shared/system
+chmod g+w $app_dir/shared/log
+chmod g+w $app_dir/shared/pids
+chmod g+w $app_dir/shared/sockets
+
+# Release a simple Rack application
+release_dir=$app_dir/releases/$(date +"%Y%m%d%H%M%S")
+mkdir -p $release_dir/config
+mkdir -p $release_dir/public
+ln -s $release_dir $app_root
+$utils/mash $templates/app/config.ru app_name:$app_name > $app_root/config.ru
+$utils/mash $templates/app/unicorn.rb app_dir:$app_dir > $app_root/config/unicorn.rb
+
+# Setup Unicorn
+echo "`$utils/mash $templates/unicorn/app.conf app_dir:$app_dir app_env:$app_env`" | sudo tee /etc/unicorn/$app_name.conf > /dev/null
+
+# Setup Nginx
+echo "`$utils/mash $templates/nginx/app.conf app_dir:$app_dir app_name:$app_name server_name:$server_name`" | sudo tee /etc/nginx/sites-available/$app_name.conf > /dev/null
+sudo ln -nfs /etc/nginx/sites-available/$app_name.conf /etc/nginx/sites-enabled/$app_name.conf
+
+# Start Unicorn
+sudo /etc/init.d/unicorn start $app_name
+
+# Reload Nginx
+sudo /etc/init.d/nginx reload
+
+else
+
+echo "Usage: addapp APP_NAME APP_ENV SERVER_NAME"
+
+fi
