@@ -3,6 +3,8 @@
 self=$(cd $(dirname $BASH_SOURCE); pwd)/$(basename $BASH_SOURCE)
 group=rvm
 
+addgroup $group
+
 if [ $(id -gn) != $group ]; then
 
 echo "Installing RVM ..."; {
