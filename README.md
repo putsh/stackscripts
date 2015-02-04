@@ -13,7 +13,7 @@ Make sure to have SSH forwarding enabled:
 
 Log in on your server using SSH as root and run the following command:
 
-    $ curl -L https://raw.github.com/archan937/stackscripts/master/ubuntu/setup.sh | bash
+    $ curl -L https://raw.github.com/putsh/stackscripts/master/ubuntu/setup.sh | bash
 
 ## License
 
