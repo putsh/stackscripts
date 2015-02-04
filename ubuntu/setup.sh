@@ -7,7 +7,7 @@ echo "Cloning stackscripts repository ..."; {
 
   # Clone Git repository
   cd $HOME
-  git clone git@github.com:archan937/stackscripts.git
+  git clone https://github.com/putsh/stackscripts.git
 
 } 2>&1 | sed "s/^/   /"
 
