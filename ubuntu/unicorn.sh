@@ -4,6 +4,8 @@ self=$(cd $(dirname $BASH_SOURCE); pwd)/$(basename $BASH_SOURCE)
 group=rvm
 templates="$HOME/stackscripts/templates/unicorn"
 
+addgroup $group
+
 if [ $(id -gn) != $group ]; then
 
 echo "Installing Unicorn ..."; {
