@@ -9,6 +9,7 @@ echo "Installing Nginx ..."; {
 
   # Install Nginx
   aptitude -y install nginx
+  addgroup $group
   usermod -aG $group `whoami`
 
   # Loosen permissions
