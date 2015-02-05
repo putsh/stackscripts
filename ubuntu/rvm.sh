@@ -4,6 +4,7 @@ self=$(cd $(dirname $BASH_SOURCE); pwd)/$(basename $BASH_SOURCE)
 group=rvm
 
 addgroup $group
+command curl -sSL https://rvm.io/mpapis.asc | sudo gpg --import -
 
 if [ $(id -gn) != $group ]; then
 
