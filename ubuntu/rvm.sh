@@ -35,8 +35,8 @@ else {
   echo "rake" | sudo tee -a /usr/local/rvm/gemsets/global.gems > /dev/null
   echo "bundler" | sudo tee -a /usr/local/rvm/gemsets/global.gems > /dev/null
 
-  # Install Ruby 2.1.1
-  ruby="ruby-2.1.1"
+  # Install Ruby 2.1.5
+  ruby="ruby-2.1.5"
   rvmsudo rvm install $ruby
   rvm use $ruby --default
 
