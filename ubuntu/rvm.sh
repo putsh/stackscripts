@@ -4,6 +4,7 @@ self=$(cd $(dirname $BASH_SOURCE); pwd)/$(basename $BASH_SOURCE)
 group=rvm
 
 addgroup $group
+gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 
 if [ $(id -gn) != $group ]; then
 
@@ -35,7 +36,7 @@ else {
   echo "rake" | sudo tee -a /usr/local/rvm/gemsets/global.gems > /dev/null
   echo "bundler" | sudo tee -a /usr/local/rvm/gemsets/global.gems > /dev/null
 
-  # Install Ruby 2.1.5
+  # Install Ruby
   ruby="ruby-2.1.5"
   rvmsudo rvm install $ruby
   rvm use $ruby --default
